@@ -5,17 +5,20 @@ import { Usuario } from '../classes/usuario';
 
 export const usuariosConectados = new UsuariosLista()
 
-export const conectarCliente = (cliente:Socket)=>{
+export const conectarCliente = (cliente:Socket, io:SocketIO.Server)=>{
     const usuario = new Usuario(cliente.id);
     usuariosConectados.agregarUsuario(usuario);
+
+    
 }
 
 
-export const desconectar = (cliente:Socket,)=>{
+export const desconectar = (cliente:Socket,io:SocketIO.Server)=>{
     cliente.on('disconnect',()=>{
         console.log("Cliente desconectado");
         usuariosConectados.borrarUsuario(cliente.id)
-        console.log(usuariosConectados.getLista());
+        
+        io.emit('usuarios-activos',usuariosConectados.getLista());
     })
 }
 
@@ -35,9 +38,35 @@ export const login = (cliente:Socket, io:socketIO.Server)=>{
 
         usuariosConectados.actualizarNombre(cliente.id,payload.nombre);        
 
+        io.emit('usuarios-activos',usuariosConectados.getLista());
+
         callback({
             ok:true,            
             usuarioActualizado: usuariosConectados.getLista()
         })
+    })
+}
+
+export const obtenerUsuarios = (cliente:Socket, io:socketIO.Server)=>{
+    cliente.on('obtener-usuarios',()=>{        
+
+        io.to(cliente.id).emit('usuarios-activos',usuariosConectados.getLista());
+        
+    })
+}
+
+export const escribiendo = (cliente:Socket, io:socketIO.Server)=>{
+    cliente.on('escribiendo',(/* callback:Function */)=>{
+        console.log('escribiendo');
+
+        //let partner:Usuario;
+        //partner = usuariosConectados.getPartner(cliente.id);        
+
+        io.to(cliente.id).emit('escuchando-escritura');
+
+/*         callback({
+            ok:true,            
+            escribiendo: usuariosConectados.getPartner(cliente.id)
+        }) */
     })
 }

@@ -33,14 +33,20 @@ export default class Server{
 
         this.io.on('connection', cliente=>{
 
-            socket.conectarCliente(cliente)
+            socket.conectarCliente(cliente, this.io);
+
+            //Para obtener los usuarios cuando el cliente entra nuevamente a la app
+            socket.obtenerUsuarios(cliente,this.io);
 
             //Configurar usuario
             socket.login(cliente,this.io);            
 
             socket.mensaje(cliente, this.io);
 
-            socket.desconectar(cliente);
+            //para detectar cuando un usuario escribe
+            socket.escribiendo(cliente,this.io);
+
+            socket.desconectar(cliente, this.io);
         }) 
     }
 

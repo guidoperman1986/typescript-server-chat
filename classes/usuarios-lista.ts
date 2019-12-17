@@ -23,8 +23,8 @@ export class UsuariosLista{
         console.log(this.lista);
     }
 
-    public getLista(){
-        return this.lista
+    public getLista(){        
+        return this.lista.filter(usuario=>usuario.nombre !== 'sin-nombre')
     }
 
     public getUsuario(id:string){
@@ -42,6 +42,10 @@ export class UsuariosLista{
         this.lista = this.lista.filter(usuario=>usuario.id != id)
 
         return tempUsuario;
+    }
+
+    public getPartner(id:string){
+        return this.lista.find(usuario=>usuario.id !== id);
     }
 
 
